@@ -10,6 +10,8 @@ import io.core9.plugin.importer.processor.csv.CSVConfig;
 import io.core9.plugin.importer.processor.csv.CSVProcessor;
 import io.core9.plugin.importer.processor.merge.MergeConfig;
 import io.core9.plugin.importer.processor.merge.MergeProcessor;
+import io.core9.plugin.importer.processor.reference.ReferenceConfig;
+import io.core9.plugin.importer.processor.reference.ReferenceProcessor;
 import io.core9.plugin.server.VirtualHost;
 import io.core9.plugin.server.request.Request;
 
@@ -83,6 +85,8 @@ public class ImporterPluginImpl extends AbstractAdminPlugin implements ImporterP
 		this.processors.put(merge.getProcessorIdentifier(), merge);
 		Processor<BatchConfig> batch = new BatchProcessor();
 		this.processors.put(batch.getProcessorIdentifier(), batch);
+		Processor<ReferenceConfig> reference = new ReferenceProcessor();
+		this.processors.put(reference.getProcessorIdentifier(), reference);
 	}
 
 	@Override
