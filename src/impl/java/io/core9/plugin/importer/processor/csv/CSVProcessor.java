@@ -82,33 +82,17 @@ public class CSVProcessor extends AbstractProcessor<CSVConfig> implements Proces
 					if(config.getContenttype() != null && !config.getContenttype().equals("")) {
 						((Map<String,String>)line).put("contenttype", config.getContenttype());
 					}
+					Map<String,Object> query = new HashMap<String,Object>();
 					if(config.getPrimaryKey() != null && !config.getPrimaryKey().equals("")) {
-						// Primary key set, do partial update (this can be fixed by $setOnInsert on MongoDB 2.5.5+
-						Map<String,Object> query = new HashMap<String,Object>();
 						query.put(config.getPrimaryKey(), line.get(config.getPrimaryKey()));
-						Map<String,Object> result = database.getSingleResult(
-								(String) vhost.getContext("database"), 
-								(String) vhost.getContext("prefix") + config.getCollection(),
-								query);
-						query.clear();
-						if(result != null && result.get("_id") != null) {
-							query.put("_id", result.get("_id"));
-						}
-						Map<String,Object> newDoc = new HashMap<String,Object>();
-						newDoc.put("$set", line);
-						database.upsert(
-								(String) vhost.getContext("database"), 
-								(String) vhost.getContext("prefix") + config.getCollection(), 
-								newDoc, 
-								query);
-					} else {
-						// No primary key, do full document update
-						database.upsert(
+					}
+					Map<String,Object> newDoc = new HashMap<String,Object>();
+					newDoc.put("$set", line);
+					database.upsert(
 							(String) vhost.getContext("database"), 
 							(String) vhost.getContext("prefix") + config.getCollection(), 
-							(Map<String, Object>) line, 
-							(Map<String, Object>) line);
-					}
+							newDoc, 
+							query);
 				}
 			}
 		} catch (Exception e) {

@@ -44,7 +44,9 @@ public class ReferenceProcessor extends AbstractProcessor<ReferenceConfig> imple
 			}
 			Map<String,Object> query = new HashMap<String, Object>();
 			query.put("_id", item.get("_id"));
-			db.upsert((String) vhost.getContext("database"), vhost.getContext("prefix") + configuration.getTargetCollection(), item, query);
+			Map<String,Object> doc = new HashMap<String, Object>();
+			doc.put("$set", item);
+			db.upsert((String) vhost.getContext("database"), vhost.getContext("prefix") + configuration.getTargetCollection(), doc, query);
 		}
 		return "ok";
 	}
