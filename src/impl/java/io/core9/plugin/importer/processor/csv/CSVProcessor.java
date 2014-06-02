@@ -2,6 +2,7 @@ package io.core9.plugin.importer.processor.csv;
 
 import io.core9.plugin.database.mongodb.MongoDatabase;
 import io.core9.plugin.importer.processor.AbstractProcessor;
+import io.core9.plugin.importer.processor.ImporterConfig;
 import io.core9.plugin.importer.processor.Processor;
 import io.core9.plugin.server.VirtualHost;
 
@@ -103,7 +104,7 @@ public class CSVProcessor extends AbstractProcessor<CSVConfig> implements Proces
 	}
 
 	@Override
-	public Class<?> getConfigClass() {
+	public Class<? extends ImporterConfig> getConfigClass() {
 		return CSVConfig.class;
 	}
 

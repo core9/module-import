@@ -1,6 +1,8 @@
 package io.core9.plugin.importer.processor.batch;
 
-public class BatchConfig {
+import io.core9.plugin.importer.processor.ImporterConfig;
+
+public class BatchConfig extends ImporterConfig {
 	private Importer[] importers;
 
 	/**

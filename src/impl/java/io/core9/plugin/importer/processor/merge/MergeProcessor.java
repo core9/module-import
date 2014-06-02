@@ -2,6 +2,7 @@ package io.core9.plugin.importer.processor.merge;
 
 import io.core9.plugin.database.mongodb.MongoDatabase;
 import io.core9.plugin.importer.processor.AbstractProcessor;
+import io.core9.plugin.importer.processor.ImporterConfig;
 import io.core9.plugin.importer.processor.Processor;
 import io.core9.plugin.server.VirtualHost;
 
@@ -59,7 +60,7 @@ public class MergeProcessor extends AbstractProcessor<MergeConfig> implements Pr
 	}
 
 	@Override
-	public Class<?> getConfigClass() {
+	public Class<? extends ImporterConfig> getConfigClass() {
 		return MergeConfig.class;
 	}
 

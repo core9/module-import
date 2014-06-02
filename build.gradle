@@ -25,6 +25,7 @@ dependencies {
 	apiCompile 'io.core9:module-database-mongodb-api:+'
 	apiCompile 'com.fasterxml.jackson.module:jackson-module-jsonSchema:+'
 	
+	implCompile 'io.core9:module-task-manager-api:+'
 	implCompile 'net.sf.dozer:dozer:+'
 	implCompile 'net.sf.supercsv:super-csv:+'
 }

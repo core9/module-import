@@ -1,8 +1,10 @@
 package io.core9.plugin.importer.processor.merge;
 
+import io.core9.plugin.importer.processor.ImporterConfig;
+
 import java.util.ArrayList;
 
-public class MergeConfig {
+public class MergeConfig extends ImporterConfig {
 	private ArrayList<MergeSpec> specs;
 
 	/**

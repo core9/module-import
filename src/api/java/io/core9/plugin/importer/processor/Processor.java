@@ -6,13 +6,13 @@ import io.core9.plugin.server.VirtualHost;
 import com.fasterxml.jackson.module.jsonSchema.JsonSchema;
 
 
-public interface Processor<T> {
+public interface Processor<T extends ImporterConfig> {
 	
 	/**
 	 * Return the config class
 	 * @return
 	 */
-	Class<?> getConfigClass();
+	Class<? extends ImporterConfig> getConfigClass();
 	
 	/**
 	 * Return the processor identifier (unique, system name)

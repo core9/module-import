@@ -1,10 +1,12 @@
 package io.core9.plugin.importer.processor.csv;
 
+import io.core9.plugin.importer.processor.ImporterConfig;
+
 import org.supercsv.cellprocessor.ParseInt;
 import org.supercsv.cellprocessor.constraint.NotNull;
 import org.supercsv.cellprocessor.ift.CellProcessor;
 
-public class CSVConfig {
+public class CSVConfig extends ImporterConfig {
 	private String url;
 	private String separator;
 	private String collection;

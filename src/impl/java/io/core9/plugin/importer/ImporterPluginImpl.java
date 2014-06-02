@@ -3,6 +3,7 @@ package io.core9.plugin.importer;
 import io.core9.plugin.admin.AbstractAdminPlugin;
 import io.core9.plugin.admin.plugins.AdminConfigRepository;
 import io.core9.plugin.database.mongodb.MongoDatabase;
+import io.core9.plugin.importer.processor.ImporterConfig;
 import io.core9.plugin.importer.processor.Processor;
 import io.core9.plugin.importer.processor.batch.BatchConfig;
 import io.core9.plugin.importer.processor.batch.BatchProcessor;
@@ -14,9 +15,12 @@ import io.core9.plugin.importer.processor.reference.ReferenceConfig;
 import io.core9.plugin.importer.processor.reference.ReferenceProcessor;
 import io.core9.plugin.server.VirtualHost;
 import io.core9.plugin.server.request.Request;
+import io.core9.scheduler.SchedulerPlugin;
+import io.core9.scheduler.Task;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import net.xeoh.plugins.base.annotations.PluginImplementation;
@@ -29,6 +33,9 @@ public class ImporterPluginImpl extends AbstractAdminPlugin implements ImporterP
 	
 	@SuppressWarnings("rawtypes")
 	private Map<String, Processor> processors = new HashMap<String, Processor>();
+	
+	@InjectPlugin
+	private SchedulerPlugin scheduler;
 	
 	@InjectPlugin
 	private AdminConfigRepository config;
@@ -79,14 +86,7 @@ public class ImporterPluginImpl extends AbstractAdminPlugin implements ImporterP
 
 	@Override
 	public void execute() {
-		Processor<CSVConfig> csv = new CSVProcessor();
-		this.processors.put(csv.getProcessorIdentifier(), csv);
-		Processor<MergeConfig> merge = new MergeProcessor();
-		this.processors.put(merge.getProcessorIdentifier(), merge);
-		Processor<BatchConfig> batch = new BatchProcessor();
-		this.processors.put(batch.getProcessorIdentifier(), batch);
-		Processor<ReferenceConfig> reference = new ReferenceProcessor();
-		this.processors.put(reference.getProcessorIdentifier(), reference);
+		
 	}
 
 	@Override
@@ -104,7 +104,7 @@ public class ImporterPluginImpl extends AbstractAdminPlugin implements ImporterP
 	public String runImporter(String type, VirtualHost vhost, Map<String,Object> importer) {
 		@SuppressWarnings("rawtypes")
 		Processor proc = processors.get(importer.get("processor"));
-		Object confpojo = null;
+		ImporterConfig confpojo = null;
 		if(proc.getConfigClass() != null) {
 			// Map the configuration data to the configuration class
 			final DozerBeanMapper mapper = new DozerBeanMapper();
@@ -113,4 +113,56 @@ public class ImporterPluginImpl extends AbstractAdminPlugin implements ImporterP
 		return proc.psetImporterPlugin(this).process(type, vhost, confpojo);
 	}
 
+	@SuppressWarnings("unchecked")
+	@Override
+	public void process(VirtualHost[] vhosts) {
+		Processor<CSVConfig> csv = new CSVProcessor();
+		this.processors.put(csv.getProcessorIdentifier(), csv);
+		Processor<MergeConfig> merge = new MergeProcessor();
+		this.processors.put(merge.getProcessorIdentifier(), merge);
+		Processor<BatchConfig> batch = new BatchProcessor();
+		this.processors.put(batch.getProcessorIdentifier(), batch);
+		Processor<ReferenceConfig> reference = new ReferenceProcessor();
+		this.processors.put(reference.getProcessorIdentifier(), reference);
+		
+		for(VirtualHost vhost: vhosts) {
+			List<Map<String,Object>> importers = config.getConfigList(vhost, "importer");
+			for(Map<String,Object> importer : importers) {
+				@SuppressWarnings("rawtypes")
+				Processor proc = processors.get(importer.get("processor"));
+				ImporterConfig confpojo = null;
+				if(proc.getConfigClass() != null) {
+					// Map the configuration data to the configuration class
+					final DozerBeanMapper mapper = new DozerBeanMapper();
+					confpojo = mapper.map(importer.get("processorOptions"), proc.getConfigClass());
+					if(confpojo.getInterval() > 0) {
+						Task importTask = getTaskForImporter(this, (String) importer.get("_id"), vhost, proc, confpojo);
+						scheduler.registerTask(importTask);
+						scheduler.triggerTask(importTask.getName(), importTask.getGroup(), confpojo.getInterval());
+					}
+				}
+			}
+		}
+	}
+
+	private Task getTaskForImporter(final ImporterPlugin importerPlugin, final String id, final VirtualHost vhost, @SuppressWarnings("rawtypes") final Processor proc, final ImporterConfig config) {
+		return new Task() {
+			
+			@Override
+			public String getName() {
+				return id;
+			}
+			
+			@Override
+			public String getGroup() {
+				return "importer";
+			}
+			
+			@SuppressWarnings("unchecked")
+			@Override
+			public void execute() {
+				proc.psetImporterPlugin(importerPlugin).process("import", vhost, config);
+			}
+		};
+	}
 }

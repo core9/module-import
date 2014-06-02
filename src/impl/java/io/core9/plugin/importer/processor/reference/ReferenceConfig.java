@@ -1,6 +1,8 @@
 package io.core9.plugin.importer.processor.reference;
 
-public class ReferenceConfig {
+import io.core9.plugin.importer.processor.ImporterConfig;
+
+public class ReferenceConfig extends ImporterConfig {
 	
 	private String sourceCollection;
 	private String sourceField;

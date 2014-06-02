@@ -9,7 +9,7 @@ import com.fasterxml.jackson.module.jsonSchema.factories.SchemaFactoryWrapper;
 import com.fasterxml.jackson.module.jsonSchema.types.SimpleTypeSchema;
 
 
-public abstract class AbstractProcessor<T> implements Processor<T> {
+public abstract class AbstractProcessor<T extends ImporterConfig> implements Processor<T> {
 	
 	private ImporterPlugin plugin;
 	

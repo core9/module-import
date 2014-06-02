@@ -2,7 +2,7 @@ package io.core9.plugin.importer.processor.batch;
 
 import io.core9.plugin.importer.ImporterPlugin;
 import io.core9.plugin.importer.processor.AbstractProcessor;
-import io.core9.plugin.importer.processor.Processor;
+import io.core9.plugin.importer.processor.ImporterConfig;
 import io.core9.plugin.server.VirtualHost;
 
 import java.util.HashMap;
@@ -13,7 +13,7 @@ import net.xeoh.plugins.base.annotations.PluginImplementation;
 import net.xeoh.plugins.base.annotations.injections.InjectPlugin;
 
 @PluginImplementation
-public class BatchProcessor extends AbstractProcessor<BatchConfig> implements Processor<BatchConfig> {
+public class BatchProcessor extends AbstractProcessor<BatchConfig> {
 	
 	@InjectPlugin
 	private ImporterPlugin importer; 
@@ -54,7 +54,7 @@ public class BatchProcessor extends AbstractProcessor<BatchConfig> implements Pr
 	}
 
 	@Override
-	public Class<?> getConfigClass() {
+	public Class<? extends ImporterConfig> getConfigClass() {
 		return BatchConfig.class;
 	}
 
