@@ -134,7 +134,7 @@ public class ImporterPluginImpl extends AbstractAdminPlugin implements ImporterP
 				if(proc.getConfigClass() != null) {
 					// Map the configuration data to the configuration class
 					final DozerBeanMapper mapper = new DozerBeanMapper();
-					confpojo = mapper.map(importer.get("processorOptions"), proc.getConfigClass());
+					confpojo = (ImporterConfig) mapper.map(importer.get("processorOptions"), proc.getConfigClass());
 					if(confpojo.getInterval() > 0) {
 						Task importTask = getTaskForImporter(this, (String) importer.get("_id"), vhost, proc, confpojo);
 						scheduler.registerTask(importTask);
