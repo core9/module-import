@@ -18,7 +18,6 @@ import io.core9.plugin.server.request.Request;
 import io.core9.scheduler.SchedulerPlugin;
 import io.core9.scheduler.Task;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -28,8 +27,13 @@ import net.xeoh.plugins.base.annotations.injections.InjectPlugin;
 
 import org.dozer.DozerBeanMapper;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 @PluginImplementation
 public class ImporterPluginImpl extends AbstractAdminPlugin implements ImporterPlugin {
+	
+	private static final ObjectMapper MAPPER = new ObjectMapper();
 	
 	@SuppressWarnings("rawtypes")
 	private Map<String, Processor> processors = new HashMap<String, Processor>();
@@ -58,12 +62,16 @@ public class ImporterPluginImpl extends AbstractAdminPlugin implements ImporterP
 		req.getResponse().end();
 	}
 
-	@SuppressWarnings("rawtypes")
 	@Override
 	protected void process(Request req, String type) {
 		switch(type) {
 		case "processor":
-			req.getResponse().sendJsonArray(new ArrayList<Processor>(processors.values()));
+			try {
+				req.getResponse().end(MAPPER.writeValueAsString(processors.values()));
+			} catch (JsonProcessingException e) {
+				req.getResponse().setStatusCode(500);
+				req.getResponse().end(e.getMessage());
+			}
 			break;
 		default:
 			req.getResponse().end();

@@ -85,14 +85,15 @@ public class CSVProcessor extends AbstractProcessor<CSVConfig> implements Proces
 					}
 					Map<String,Object> query = new HashMap<String,Object>();
 					if(config.getPrimaryKey() != null && !config.getPrimaryKey().equals("")) {
-						query.put(config.getPrimaryKey(), line.get(config.getPrimaryKey()));
+						query.put("_id", line.get(config.getPrimaryKey()));
+						line.remove(config.getPrimaryKey());
 					}
 					Map<String,Object> newDoc = new HashMap<String,Object>();
 					newDoc.put("$set", line);
 					database.upsert(
 							(String) vhost.getContext("database"), 
 							(String) vhost.getContext("prefix") + config.getCollection(), 
-							newDoc, 
+							newDoc,
 							query);
 				}
 			}
