@@ -153,6 +153,15 @@ public class ImporterPluginImpl extends AbstractAdminPlugin implements ImporterP
 		}
 	}
 
+	/**
+	 * Return a Task, ready to be scheduled.
+	 * @param importerPlugin
+	 * @param id
+	 * @param vhost
+	 * @param proc
+	 * @param config
+	 * @return
+	 */
 	private Task getTaskForImporter(final ImporterPlugin importerPlugin, final String id, final VirtualHost vhost, @SuppressWarnings("rawtypes") final Processor proc, final ImporterConfig config) {
 		return new Task() {
 			
